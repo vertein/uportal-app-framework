@@ -1,5 +1,5 @@
 {
-  "name": "uw-frame",
+  "name": "vertein-uw-frame",
   "version": "4.1.0",
   "description": "MyUW's frame project for creating angular based microservices.",
   "scripts": {
