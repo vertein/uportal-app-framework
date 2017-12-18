@@ -160,6 +160,30 @@ define(['angular'], function(angular) {
               promises.push($http.get(message.audienceFilter.dataUrl)
                 .then(function(result) {
                   var objectToFind = result.data;
+                  // if dataMessageTitle is specified, use it
+                  if (result && message.audienceFilter.dataMessageTitle &&
+                    angular.isArray(message.audienceFilter.dataMessageTitle)) {
+                    var messageTitle = objectToFind;
+                    var messageTitleLocation =
+                      message.audienceFilter.dataMessageTitle;
+                    angular.forEach(messageTitleLocation, function(value, key) {
+                      messageTitle = messageTitle[value];
+                    });
+                    message.title = messageTitle;
+                  }
+                  // if dataMessageLearnMoreUrl is specified, us it
+                  if (result && message.audienceFilter.dataMessageMoreInfoUrl
+                    && angular.isArray(
+                    message.audienceFilter.dataMessageMoreInfoUrl)) {
+                    var messageMoreInfoUrl = objectToFind;
+                    var messageMoreInfoUrlLocation =
+                      message.audienceFilter.messageMoreInfoUrl;
+                    angular.forEach(messageMoreInfoUrlLocation,
+                      function(value, key) {
+                      messageMoreInfoUrl = messageMoreInfoUrl[value];
+                    });
+                    message.moreInfoButton.url = messageMoreInfoUrl;
+                  }
                   // If dataObject specified, try to use it
                   if (result && message.audienceFilter.dataObject) {
                     objectToFind =
