@@ -155,7 +155,7 @@ define(['angular'], function(angular) {
           var filteredMessages = [];
 
           angular.forEach(messages, function(message) {
-            if (message.audienceFilter.dataUrl) {
+            if (message.audienceFilter && message.audienceFilter.dataUrl) {
               // If the message has a dataUrl, add it to promises array
               promises.push($http.get(message.audienceFilter.dataUrl)
                 .then(function(result) {
@@ -173,11 +173,11 @@ define(['angular'], function(angular) {
                   }
                   // if dataMessageLearnMoreUrl is specified, us it
                   if (result && message.audienceFilter.dataMessageMoreInfoUrl
-                    && angular.isArray(
+                    &&  message.moreInfoButton && angular.isArray(
                     message.audienceFilter.dataMessageMoreInfoUrl)) {
                     var messageMoreInfoUrl = objectToFind;
                     var messageMoreInfoUrlLocation =
-                      message.audienceFilter.messageMoreInfoUrl;
+                      message.audienceFilter.dataMessageMoreInfoUrl;
                     angular.forEach(messageMoreInfoUrlLocation,
                       function(value, key) {
                       messageMoreInfoUrl = messageMoreInfoUrl[value];

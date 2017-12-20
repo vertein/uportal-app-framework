@@ -35,6 +35,15 @@ module.exports = function(config) {
           'portal/**/*.js': 'coverage',
           'my-app/**/*.js': 'coverage',
         },
+        
+        logLevel: config.LOG_LOG,
+        
+        client: {
+          captureConsole: true,
+          mocha: {
+            bail: true
+          }
+        },
 
         autoWatch: true,
 

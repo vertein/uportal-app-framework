@@ -420,7 +420,7 @@ define(['angular-mocks', 'portal'], function() {
       httpBackend.flush();
     });
 
-    it("notification should appear when dataObject is present and not an array", function(){
+    it("message should appear when dataObject is present and not an array", function(){
       //setup
       httpBackend.whenGET(messagesUrl).respond(
         {"messages" :
@@ -460,6 +460,247 @@ define(['angular-mocks', 'portal'], function() {
       }).then(function(dataMessages){
         expect(dataMessages).toBeTruthy();
         expect(dataMessages.length).toEqual(2);
+      });
+      httpBackend.flush();
+    });
+
+    it("message should have title from data if specified", function(){
+      //setup
+      var title = "Use this as a title";
+      httpBackend.whenGET(messagesUrl).respond(
+        {"messages" :
+          [
+            {
+              "id"     : 1,
+              "title"  : "message 1",
+              "actionURL" : "http://www.google.com",
+              "actionAlt" : "Google",
+              "audienceFilter": {
+                "groups": [
+                  "Everyone"
+                ]
+              }
+            },
+            {
+              "id"     : 2,
+              "title"  : "message 2",
+              "actionURL" : "http://www.google.com",
+              "actionAlt" : "Google",
+              "audienceFilter": {
+                "groups": [
+                  "Everyone"
+                ],
+                "dataUrl" : "http://www.google.com",
+                "dataObject" : "id",
+                "dataMessageTitle" : ["title", "Supplied Title"]
+              }
+            }
+          ]
+        }
+      );
+      httpBackend.whenGET("http://www.google.com").respond(200, {"name":"foo" , "id":"bar" , "favorite food":"baz", "title":{"Supplied Title" : title}});
+      messagesService.getAllMessages().then(function(allMessages){
+        expect(allMessages).toBeTruthy();
+        expect(allMessages.length).toEqual(2);
+        return messagesService.getMessagesByData(allMessages);
+      }).then(function(dataMessages){
+        expect(dataMessages).toBeTruthy();
+        expect(dataMessages.length).toEqual(2);
+        expect(dataMessages[1].title).toEqual(title);
+      });
+      httpBackend.flush();
+    });
+    
+    it("message should not have title from data if specified but url is not used", function(){
+      //setup
+      var title = "Use this as a title";
+      httpBackend.whenGET(messagesUrl).respond(
+        {"messages" :
+          [
+            {
+              "id"     : 1,
+              "title"  : "message 1",
+              "actionURL" : "http://www.google.com",
+              "actionAlt" : "Google",
+              "audienceFilter": {
+                "groups": [
+                  "Everyone"
+                ]
+              }
+            },
+            {
+              "id"     : 2,
+              "title"  : "message 2",
+              "actionURL" : "http://www.google.com",
+              "actionAlt" : "Google",
+              "audienceFilter": {
+                "groups": [
+                  "Everyone"
+                ],
+                "dataObject" : "id",
+                "dataMessageTitle" : ["title", "Supplied Title"]
+              }
+            }
+          ]
+        }
+      );
+      httpBackend.whenGET("http://www.google.com").respond(200, {"name":"foo" , "id":"bar" , "favorite food":"baz", "title":{"Supplied Title" : title}});
+      messagesService.getAllMessages().then(function(allMessages){
+        expect(allMessages).toBeTruthy();
+        expect(allMessages.length).toEqual(2);
+        return messagesService.getMessagesByData(allMessages);
+      }).then(function(dataMessages){
+        expect(dataMessages).toBeTruthy();
+        expect(dataMessages.length).toEqual(2);
+        expect(dataMessages[1].title).toEqual("message 2");
+      });
+      httpBackend.flush();
+    });
+
+    it("message should have more info url from data if specified", function(){
+      //setup
+      var url = "exampleUrl";
+      httpBackend.whenGET(messagesUrl).respond(
+        {"messages" :
+          [
+            {
+              "id"     : 1,
+              "title"  : "message 1",
+              "actionURL" : "http://www.google.com",
+              "actionAlt" : "Google",
+              "audienceFilter": {
+                "groups": [
+                  "Everyone"
+                ]
+              }
+            },
+            {
+              "id"     : 2,
+              "title"  : "message 2",
+              "actionURL" : "http://www.google.com",
+              "actionAlt" : "Google",
+              "audienceFilter": {
+                "groups": [
+                  "Everyone"
+                ],
+                "dataUrl" : "http://www.google.com",
+                "dataObject" : "id",
+                "dataMessageMoreInfoUrl" : ["Learn More", "url"]
+              },
+              "moreInfoButton": {
+                "label": "Learn more",
+                "url": "to be replaced"
+              }
+            }
+          ]
+        }
+      );
+      httpBackend.whenGET("http://www.google.com").respond(200, {"name":"foo" , "id":"bar" , "favorite food":"baz", "Learn More":{"url" : url}});
+      messagesService.getAllMessages().then(function(allMessages){
+        expect(allMessages).toBeTruthy();
+        expect(allMessages.length).toEqual(2);
+        return messagesService.getMessagesByData(allMessages);
+      }).then(function(dataMessages){
+        expect(dataMessages).toBeTruthy();
+        expect(dataMessages.length).toEqual(2);
+        expect(dataMessages[1].moreInfoButton.url).toEqual(url);
+      });
+      httpBackend.flush();
+    });
+    
+    it("message should not have more info url from data if specified, but learnMoreButton not configured", function(){
+      //setup
+      var url = "exampleUrl";
+      httpBackend.whenGET(messagesUrl).respond(
+        {"messages" :
+          [
+            {
+              "id"     : 1,
+              "title"  : "message 1",
+              "actionURL" : "http://www.google.com",
+              "actionAlt" : "Google",
+              "audienceFilter": {
+                "groups": [
+                  "Everyone"
+                ]
+              }
+            },
+            {
+              "id"     : 2,
+              "title"  : "message 2",
+              "actionURL" : "http://www.google.com",
+              "actionAlt" : "Google",
+              "audienceFilter": {
+                "groups": [
+                  "Everyone"
+                ],
+                "dataUrl" : "http://www.google.com",
+                "dataObject" : "id",
+                "dataMessageMoreInfoUrl" : ["Learn More", "url"]
+              }
+            }
+          ]
+        }
+      );
+      httpBackend.whenGET("http://www.google.com").respond(200, {"name":"foo" , "id":"bar" , "favorite food":"baz", "Learn More":{"url" : url}});
+      messagesService.getAllMessages().then(function(allMessages){
+        expect(allMessages).toBeTruthy();
+        expect(allMessages.length).toEqual(2);
+        return messagesService.getMessagesByData(allMessages);
+      }).then(function(dataMessages){
+        expect(dataMessages).toBeTruthy();
+        expect(dataMessages.length).toEqual(2);
+        expect(dataMessages[1].moreInfoButton).toBeUndefined();
+      });
+      httpBackend.flush();
+    });
+    
+    it("message should not have more info url from data if specified, but no dataurl is configured", function(){
+      //setup
+      var url = "exampleUrl";
+      httpBackend.whenGET(messagesUrl).respond(
+        {"messages" :
+          [
+            {
+              "id"     : 1,
+              "title"  : "message 1",
+              "actionURL" : "http://www.google.com",
+              "actionAlt" : "Google",
+              "audienceFilter": {
+                "groups": [
+                  "Everyone"
+                ]
+              }
+            },
+            {
+              "id"     : 2,
+              "title"  : "message 2",
+              "actionURL" : "http://www.google.com",
+              "actionAlt" : "Google",
+              "audienceFilter": {
+                "groups": [
+                  "Everyone"
+                ],
+                "dataObject" : "id",
+                "dataMessageMoreInfoUrl" : ["Learn More", "url"]
+              },
+              "moreInfoButton": {
+                "label": "Learn more",
+                "url": "to be replaced"
+              }
+            }
+          ]
+        }
+      );
+      httpBackend.whenGET("http://www.google.com").respond(200, {"name":"foo" , "id":"bar" , "favorite food":"baz", "Learn More":{"url" : url}});
+      messagesService.getAllMessages().then(function(allMessages){
+        expect(allMessages).toBeTruthy();
+        expect(allMessages.length).toEqual(2);
+        return messagesService.getMessagesByData(allMessages);
+      }).then(function(dataMessages){
+        expect(dataMessages).toBeTruthy();
+        expect(dataMessages.length).toEqual(2);
+        expect(dataMessages[1].moreInfoButton.url).toEqual("to be replaced");
       });
       httpBackend.flush();
     });

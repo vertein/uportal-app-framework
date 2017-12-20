@@ -51,6 +51,7 @@ define(['angular'], function(angular) {
               } else if (angular.isString(result)) {
                 $scope.messagesError = result;
               }
+              console.log('we should filter');
               filterMessages();
               return allMessages;
             })
