@@ -12,9 +12,6 @@ matrix:
       dist: trusty
       jdk: openjdk7
       env: BROWSERS=ChromeHeadlessNoSandbox,FirefoxHeadless
-    - os: osx
-      osx_image: xcode8.3
-      env: BROWSERS=ChromeHeadless,Safari
 
 addons:
   chrome: stable
